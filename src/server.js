@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import express from "express";
 import { createServer } from "http";
 import cors from "cors";
+import fs from "fs";
 import "dotenv/config"
 
 const app = express();
@@ -16,6 +17,15 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   console.log(socket.id, 'socket id')
+
+  fs.readFile('./src/map.tmj', 'utf-8', (err, data) => {
+    if (err) {
+      console.error('Error reading TMJ file:', err);
+      return;
+    }
+
+    socket.emit('tmjMapData', JSON.parse(data));
+  })
 });
 
 app.use(express.static('public'));

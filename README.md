@@ -1,3 +1,7 @@
+# PT Educational Game
+
+### Current practice project
+
 This is my current practice project. This is for educational purposes only and I hope it would help PT students in the future.
 
 This game was initially only a db app that would work as an exam type educational format. But upon learning of HTML, CSS, and JavaScript capabilities to make a game, I decided to try to implement my original idea into a multiplayer, like Fall Guys filled with mini-games but will test the PT student their knowledge of their profession mostly on the application part.

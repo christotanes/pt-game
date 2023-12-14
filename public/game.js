@@ -43,8 +43,4 @@ window.addEventListener('load', () => {
 		requestAnimationFrame(animate);
 		
 	}
-
-	// setTimeout(() => {
-	// 	animate(0)
-	// }, 1000);
 })

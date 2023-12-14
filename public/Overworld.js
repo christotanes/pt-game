@@ -13,6 +13,11 @@ class Overworld{
 		];
 	}
 
+	static FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+	static FLIPPED_VERTICALLY_FLAG = 0x40000000;
+	static FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+	static ROTATED_HEXAGONAL_120_FLAG = 0x10000000;
+
 	// loads a new object Image() that will hold one of the tileset sources
 	loadTilesetImage(src) {
 		return new Promise(resolve => {
@@ -45,20 +50,54 @@ class Overworld{
 			if (layer.type === 'tilelayer') {
 				layer.data.forEach((globalTileId, index) => {
 					if (globalTileId !== 0) {
+
+						const flipped_horizontally = (globalTileId & Overworld.FLIPPED_HORIZONTALLY_FLAG) !== 0;
+						const flipped_vertically = (globalTileId & Overworld.FLIPPED_VERTICALLY_FLAG) !== 0;
+						const flipped_diagonally = (globalTileId & Overworld.FLIPPED_DIAGONALLY_FLAG) !== 0;
+						const rotated_hex120 = (globalTileId & Overworld.ROTATED_HEXAGONAL_120_FLAG) !== 0;
+
+						globalTileId &= ~(Overworld.FLIPPED_HORIZONTALLY_FLAG |
+															Overworld.FLIPPED_VERTICALLY_FLAG |
+															Overworld.FLIPPED_DIAGONALLY_FLAG |
+															Overworld.ROTATED_HEXAGONAL_120_FLAG);
+						
 						const tileset = this.findTileset(globalTileId);
 						const localTileId = globalTileId - tileset.firstgid;
 
 						const sourceX = (localTileId % (tileset.image.width / this.tileSize)) * this.tileSize;
-
 						const sourceY = Math.floor(localTileId / (tileset.image.width / this.tileSize)) * this.tileSize;
 						const targetX = (index % layer.width) * this.tileSize;
 						const targetY = Math.floor(index / layer.width) * this.tileSize;
+
+						this.ctx.save();
+
+						// Apply transformations if the tile is flipped or rotated
+						if (flipped_horizontally || flipped_vertically || flipped_diagonally) {
+							// Calculate the center of the tile
+							const centerX = targetX + this.tileSize / 2;
+							const centerY = targetY + this.tileSize / 2;
+
+							// Translate to the center, apply transformations, and translate back
+							this.ctx.translate(centerX, centerY);
+							if (flipped_horizontally) {
+								this.ctx.scale(-1, 1);
+							}
+							if (flipped_vertically) {
+								this.ctx.scale(1, -1);
+							}
+							if (flipped_diagonally) {
+								this.ctx.scale(-1, -1);
+							}
+							this.ctx.translate(-centerX, -centerY);
+					}
 
 						this.ctx.drawImage(
 							tileset.image,
 							sourceX, sourceY, this.tileSize, this.tileSize,
 							targetX, targetY, this.tileSize, this.tileSize
 						);
+
+						this.ctx.restore();
 					};
 				});
 			};

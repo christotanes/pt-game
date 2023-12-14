@@ -1,16 +1,14 @@
 class Overworld{
 	constructor(config) {
-		this.canvas = config.element;
-		this.ctx = this.canvas.getContext('2d');
-		this.canvas.width = 768;
-		this.canvas.height = 640;
-		this.socket = config.socket
+		this.ctx = config.canvas
 		this.tileSize = 32; // tile width 32x32
 		this.tilesets = []; // will hold tileset data
 		this.tilesetSources = [
 			'./assets/map/Interiors_free_32x32.png',
 			'./assets/map/Room_Builder_free_32x32.png'
 		];
+		this.map = config.map;
+		this.isLoaded = false;
 	}
 
 	static FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
@@ -30,7 +28,8 @@ class Overworld{
 	findTileset(globalTileId) {
     // Iterate backwards through the tilesets as they are usually ordered by firstgid
     for (let i = this.tilesets.length - 1; i >= 0; i--) {
-        if (this.tilesets[i].firstgid <= globalTileId) {
+			if (this.tilesets[i].firstgid <= globalTileId) {
+						// console.log(this.tilesets[i])
             return this.tilesets[i];
         }
     }
@@ -38,14 +37,6 @@ class Overworld{
 	}
 
 	renderMap(tmjMapData) {
-		tmjMapData.tilesets.forEach((tileset, index) => {
-			// console.log(this.tilesets, 'tilesets data')
-			this.tilesets[index] = {
-				image: this.tilesets[index],
-				firstgid: tileset.firstgid
-			}
-		});
-
 		tmjMapData.layers.forEach(layer => {
 			if (layer.type === 'tilelayer') {
 				layer.data.forEach((globalTileId, index) => {
@@ -105,11 +96,14 @@ class Overworld{
 	};
 
 	init() {
-		this.socket.on('tmjMapData', (tmjMapData) => {
-			Promise.all(this.tilesetSources.map(src => this.loadTilesetImage(src))).then(tilesetImages => {
-				this.tilesets = tilesetImages;
-				this.renderMap(tmjMapData);
-			});
+		Promise.all(this.tilesetSources.map(src => this.loadTilesetImage(src))).then(tilesetImages => {
+			this.tilesets = tilesetImages.map((image, index) => ({
+				image: image,
+				firstgid: this.map.tilesets[index].firstgid
+			}));
+			this.isLoaded = true;
+			this.renderMap(this.map);
 		});
+		
 	}
-};
+}

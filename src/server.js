@@ -25,8 +25,6 @@ io.on("connection", (socket) => {
 
     socket.emit('tmjMapData', JSON.parse(data));
   })
-
-  socket.emit('player', socket.id)
 });
 
 app.use(express.static('public'));

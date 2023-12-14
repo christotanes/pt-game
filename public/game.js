@@ -9,6 +9,12 @@ window.addEventListener('load', () => {
 		socket: socket
 	})
 
+	const person = new Person({
+		element: document.getElementById('game-container'),
+		socket: socket
+	})
+
 	overworld.init();
+	person.init();
 
 })

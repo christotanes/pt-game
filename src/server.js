@@ -17,7 +17,6 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   console.log(socket.id, 'socket id')
-
   fs.readFile('./src/map.tmj', 'utf-8', (err, data) => {
     if (err) {
       console.error('Error reading TMJ file:', err);
@@ -26,6 +25,8 @@ io.on("connection", (socket) => {
 
     socket.emit('tmjMapData', JSON.parse(data));
   })
+
+  socket.emit('player', socket.id)
 });
 
 app.use(express.static('public'));

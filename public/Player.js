@@ -1,7 +1,8 @@
 class Player{
 	constructor(config) {
 		this.ctx = config.canvas
-		this.player = config.id
+		this.socket = config.socket
+		// this.player = config.id
 		this.width = 32;
 		this.height = 64;
 		this.x = 96;
@@ -51,8 +52,7 @@ class Player{
 			this.x, this.y, this.width, this.height
 		)
 
-	this.ctx.restore();
-		// console.log(player.src, 'renderPlayer player.src')
+		this.ctx.restore();
 	}
 
 	init() {

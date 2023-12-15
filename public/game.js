@@ -7,7 +7,8 @@ window.addEventListener('load', () => {
 	canvas.height = 640;
 	let keys = [];
 	let walls = [];
-	let overworld, player;
+	let overworld;
+	let otherPlayers = {};
 
 	const inputHandler = new InputHandler({
 		keys: keys
@@ -20,38 +21,66 @@ window.addEventListener('load', () => {
 			// interior: mapData.tsjInterior,
 			canvas: ctx
 		})
-		console.log('mapdata data on client: ', mapData)
+		// console.log('mapdata data on client: ', mapData)
 		overworld.init();
 		animate(16);
 	})
 
-	socket.on("connect", () => {
-		player = new Player({
-			canvas: ctx,
-			id: socket.id,
-			keys: keys
-		})
-		player.init();
-		// console.log(socket.id, 'Socket id and new Player Id');
+	socket.on("otherPlayers", (data) => {
+		if (data.playerId !== socket.id) {
+			if (!otherPlayers[data.playerId]) {
+				otherPlayers[data.playerId] = new Player({
+					canvas: ctx,
+					id: data.playerId,
+					keys: []
+				});
+				otherPlayers[data.playerId].init();
+			}
+			otherPlayers[data.playerId].x = data.playerPosX;
+			otherPlayers[data.playerId].y = data.playerPosY;
+		}
 	});
 
+	socket.on("playerDisconnected", (data) => {
+    if (otherPlayers[data.playerId]) {
+        delete otherPlayers[data.playerId];
+    }
+	});
 	
+	const player = new Player({
+		canvas: ctx,
+		keys: keys
+	})
+
+	socket.on("connect", () => {
+		console.log(socket.id);
+		player.init();
+	})
+
 	let lastTime = 0
 
 	function animate(timeStamp) {
 		const deltaTime = timeStamp - lastTime;
 		lastTime = timeStamp;
-		// console.log("from game.js animate:", keys)
-		// console.log('Animation loop deltaTime: ', deltaTime.toFixed(2))
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
 		if (overworld.isLoaded) {
-			// console.log(overworld.map)
 			overworld.renderMap(overworld.map);
 		}
-		if (player.isLoaded) {
-				player.renderPlayer(overworld.walls);
+
+		for (let playerId in otherPlayers) {
+			const otherPlayer = otherPlayers[playerId];
+			otherPlayer.renderPlayer(walls); // Pass walls or the relevant objects for collision
 		}
-		
+
+		if (player.isLoaded) {
+			player.renderPlayer(overworld.walls);
+			socket.emit('playerPos', {
+				playerId: socket.id,
+				playerPosX: player.x,
+				playerPosY: player.y
+			})
+		}
+
 		requestAnimationFrame(animate);
 		
 	}

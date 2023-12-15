@@ -39,18 +39,6 @@ class Overworld {
 		throw new Error('Tileset not found for global tile ID: ' + globalTileId);
 	}
 
-	checkCollision(globalTileId) {
-		if (this.room.tiles[0] <= globalTileId) {
-			for (let i = this.room.tiles.length - 1; i >= 0; i--){
-				if ((globalTileId === this.room.tiles[i].id)
-					&& this.room.tiles[i].properties[0].name === "collides") {
-					return this.room.tiles[i].properties.value
-				}
-			}
-		}
-	}
-		
-
 	renderMap(tmjMapData) {
 		tmjMapData.layers.forEach(layer => {
 			if (layer.type === 'tilelayer') {
@@ -125,7 +113,7 @@ class Overworld {
 					.filter(layer => layer.name === "wall_objects")
 					.flatMap(layer => layer.objects)
 				
-				console.log(this.walls)
+				// console.log(this.walls)
 
 				this.isLoaded = true;
 				this.renderMap(this.map);

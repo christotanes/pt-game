@@ -15,14 +15,33 @@ class Player{
 
 	// Add randomizer here
 
-	renderPlayer() {
+	renderPlayer(objects) {
 		if (!this.isLoaded) return;
+
 		// console.log('keys from Player.js: ', this.keys)
 		this.keys.forEach(key => {
-			if (key === "ArrowUp") this.y -= 1 * 2;
-			if (key === "ArrowDown") this.y += 1 * 2;
-			if (key === "ArrowLeft") this.x -= 1 * 2;
-			if (key === "ArrowRight") this.x += 1 * 2;
+			let newX = this.x;
+			let newY = this.y;
+
+			// assign new coordinates per key
+			if (key === "ArrowUp") newY -= 1 * 2;
+			if (key === "ArrowDown") newY += 1 * 2;
+			if (key === "ArrowLeft") newX -= 1 * 2;
+			if (key === "ArrowRight") newX += 1 * 2;
+			
+			// check if new coordinates intersects with walls from the objects
+			let collision = objects.some(wall => {
+				return newX <= wall.x + wall.width &&
+					newX + this.width >= wall.x &&
+					newY <= wall.y + wall.height &&
+					newY + this.height >= wall.y
+			})
+
+			// updating position if collision === false, no movement if collision === true
+			if (!collision) {
+				this.x = newX;
+				this.y = newY;
+			}
 		});
 
 		this.ctx.save();

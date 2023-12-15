@@ -6,7 +6,7 @@ window.addEventListener('load', () => {
 	canvas.width = 768;
 	canvas.height = 640;
 	let keys = [];
-
+	let walls = [];
 	let overworld, player;
 
 	const inputHandler = new InputHandler({
@@ -15,14 +15,14 @@ window.addEventListener('load', () => {
 
 	socket.on("mapData", (mapData) => {
 		overworld = new Overworld({
-			map: mapData.tmjMapData,
-			room: mapData.tsjRoomBuilder,
-			interior: mapData.tsjInterior,
+			map: mapData,
+			// room: mapData.tsjRoomBuilder,
+			// interior: mapData.tsjInterior,
 			canvas: ctx
 		})
 		console.log('mapdata data on client: ', mapData)
 		overworld.init();
-		animate(0)
+		animate(16);
 	})
 
 	socket.on("connect", () => {
@@ -37,6 +37,7 @@ window.addEventListener('load', () => {
 
 	
 	let lastTime = 0
+
 	function animate(timeStamp) {
 		const deltaTime = timeStamp - lastTime;
 		lastTime = timeStamp;
@@ -48,8 +49,9 @@ window.addEventListener('load', () => {
 			overworld.renderMap(overworld.map);
 		}
 		if (player.isLoaded) {
-				player.renderPlayer();
+				player.renderPlayer(overworld.walls);
 		}
+		
 		requestAnimationFrame(animate);
 		
 	}

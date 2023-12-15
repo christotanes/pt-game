@@ -1,4 +1,4 @@
-class Overworld{
+class Overworld {
 	constructor(config) {
 		this.ctx = config.canvas
 		this.tileSize = 32; // tile width 32x32
@@ -8,8 +8,9 @@ class Overworld{
 			'./assets/map/Room_Builder_free_32x32.png'
 		];
 		this.map = config.map;
-		this.room = config.room;
-		this.interior = config.interior;
+		this.walls = []
+		// this.room = config.room;
+		// this.interior = config.interior;
 		this.isLoaded = false;
 	}
 
@@ -28,15 +29,27 @@ class Overworld{
 	}
 
 	findTileset(globalTileId) {
-    // Iterate backwards through the tilesets as they are usually ordered by firstgid
-    for (let i = this.tilesets.length - 1; i >= 0; i--) {
+		// Iterate backwards through the tilesets as they are usually ordered by firstgid
+		for (let i = this.tilesets.length - 1; i >= 0; i--) {
 			if (this.tilesets[i].firstgid <= globalTileId) {
-						// console.log(this.tilesets[i])
-            return this.tilesets[i];
-        }
-    }
-    throw new Error('Tileset not found for global tile ID: ' + globalTileId);
+				// console.log(this.tilesets[i])
+				return this.tilesets[i];
+			}
+		}
+		throw new Error('Tileset not found for global tile ID: ' + globalTileId);
 	}
+
+	checkCollision(globalTileId) {
+		if (this.room.tiles[0] <= globalTileId) {
+			for (let i = this.room.tiles.length - 1; i >= 0; i--){
+				if ((globalTileId === this.room.tiles[i].id)
+					&& this.room.tiles[i].properties[0].name === "collides") {
+					return this.room.tiles[i].properties.value
+				}
+			}
+		}
+	}
+		
 
 	renderMap(tmjMapData) {
 		tmjMapData.layers.forEach(layer => {
@@ -56,7 +69,10 @@ class Overworld{
 						
 						const tileset = this.findTileset(globalTileId);
 						const localTileId = globalTileId - tileset.firstgid;
-						
+
+						// const collision = this.checkCollision(globalTileId);
+						// console.log(`Collsion value: ${collision} for globalTileId: ${globalTileId}`)
+						// console.log(this.objects)
 						const sourceX = (localTileId % (tileset.image.width / this.tileSize)) * this.tileSize;
 						const sourceY = Math.floor(localTileId / (tileset.image.width / this.tileSize)) * this.tileSize;
 						const targetX = (index % layer.width) * this.tileSize;
@@ -98,13 +114,21 @@ class Overworld{
 	};
 
 	init() {
-		Promise.all(this.tilesetSources.map(src => this.loadTilesetImage(src))).then(tilesetImages => {
-			this.tilesets = tilesetImages.map((image, index) => ({
-				image: image,
-				firstgid: this.map.tilesets[index].firstgid
-			}));
-			this.isLoaded = true;
-			this.renderMap(this.map);
+		Promise.all(this.tilesetSources.map(src => this.loadTilesetImage(src)))
+			.then(tilesetImages => {
+				this.tilesets = tilesetImages.map((image, index) => ({
+					image: image,
+					firstgid: this.map.tilesets[index].firstgid
+				}));
+
+				this.walls = this.map.layers
+					.filter(layer => layer.name === "wall_objects")
+					.flatMap(layer => layer.objects)
+				
+				console.log(this.walls)
+
+				this.isLoaded = true;
+				this.renderMap(this.map);
 		});
 		
 	}

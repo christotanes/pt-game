@@ -2,7 +2,8 @@ import { Server } from "socket.io";
 import express from "express";
 import { createServer } from "http";
 import cors from "cors";
-import fs from "fs/promises";
+import fs from "fs"
+// import fs from "fs/promises";
 import "dotenv/config"
 
 const app = express();
@@ -15,22 +16,33 @@ const io = new Server(httpServer, {
   }
 });
 
-io.on("connection", async (socket) => {
+io.on("connection", (socket) => {
   console.log(socket.id, 'socket id');
-  try {
-    const tmjMapData = await fs.readFile('./src/map.tmj', 'utf-8');
-    const tsjRoomBuilder = await fs.readFile('./src/Room_Builder_free_32x32.tsj', 'utf-8')
-    const tsjInterior = await fs.readFile('./src/Interiors_free_32x32.tsj', 'utf-8')
+  
+  fs.readFile('./src/map.tmj', 'utf-8', (err, tmjMapData) => {
+    if (err) {
+      console.error('Error reading file: ', err);
+    }
 
-    socket.emit('mapData', {
-      tmjMapData: JSON.parse(tmjMapData),
-      tsjRoomBuilder: JSON.parse(tsjRoomBuilder),
-      tsjInterior: JSON.parse(tsjInterior)
-    })
-  } catch (err){
-    console.error('Error reading files ', err);
-  }
-});
+    socket.emit('mapData', JSON.parse(tmjMapData))
+  })
+})
+// io.on("connection", async (socket) => {
+//   console.log(socket.id, 'socket id');
+//   try {
+//     const tmjMapData = await fs.readFile('./src/map.tmj', 'utf-8');
+//     const tsjRoomBuilder = await fs.readFile('./src/Room_Builder_free_32x32.tsj', 'utf-8')
+//     const tsjInterior = await fs.readFile('./src/Interiors_free_32x32.tsj', 'utf-8')
+
+//     socket.emit('mapData', {
+//       tmjMapData: JSON.parse(tmjMapData),
+//       tsjRoomBuilder: JSON.parse(tsjRoomBuilder),
+//       tsjInterior: JSON.parse(tsjInterior)
+//     })
+//   } catch (err){
+//     console.error('Error reading files ', err);
+//   }
+// });
 
 app.use(express.static('public'));
 app.use(cors());

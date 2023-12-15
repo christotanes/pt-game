@@ -5,8 +5,13 @@ window.addEventListener('load', () => {
 	const ctx = canvas.getContext("2d");
 	canvas.width = 768;
 	canvas.height = 640;
+	let keys = [];
 
 	let overworld, player;
+
+	const inputHandler = new InputHandler({
+		keys: keys
+	});
 
 	socket.on("tmjMapData", (tmjMapData) => {
 		overworld = new Overworld({
@@ -20,7 +25,8 @@ window.addEventListener('load', () => {
 	socket.on("connect", () => {
 		player = new Player({
 			canvas: ctx,
-			id: socket.id
+			id: socket.id,
+			keys: keys
 		})
 		player.init();
 		// console.log(socket.id, 'Socket id and new Player Id');
@@ -31,6 +37,7 @@ window.addEventListener('load', () => {
 	function animate(timeStamp) {
 		const deltaTime = timeStamp - lastTime;
 		lastTime = timeStamp;
+		// console.log("from game.js animate:", keys)
 		// console.log('Animation loop deltaTime: ', deltaTime.toFixed(2))
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
 		if (overworld.isLoaded) {

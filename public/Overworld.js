@@ -54,7 +54,7 @@ class Overworld{
 						
 						const tileset = this.findTileset(globalTileId);
 						const localTileId = globalTileId - tileset.firstgid;
-
+						
 						const sourceX = (localTileId % (tileset.image.width / this.tileSize)) * this.tileSize;
 						const sourceY = Math.floor(localTileId / (tileset.image.width / this.tileSize)) * this.tileSize;
 						const targetX = (index % layer.width) * this.tileSize;

@@ -8,6 +8,8 @@ class Overworld{
 			'./assets/map/Room_Builder_free_32x32.png'
 		];
 		this.map = config.map;
+		this.room = config.room;
+		this.interior = config.interior;
 		this.isLoaded = false;
 	}
 

@@ -13,11 +13,14 @@ window.addEventListener('load', () => {
 		keys: keys
 	});
 
-	socket.on("tmjMapData", (tmjMapData) => {
+	socket.on("mapData", (mapData) => {
 		overworld = new Overworld({
-			map: tmjMapData,
+			map: mapData.tmjMapData,
+			room: mapData.tsjRoomBuilder,
+			interior: mapData.tsjInterior,
 			canvas: ctx
 		})
+		console.log('mapdata data on client: ', mapData)
 		overworld.init();
 		animate(0)
 	})

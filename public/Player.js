@@ -17,7 +17,7 @@ class Player{
 
 	renderPlayer() {
 		if (!this.isLoaded) return;
-		console.log('keys from Player.js: ', this.keys)
+		// console.log('keys from Player.js: ', this.keys)
 		this.keys.forEach(key => {
 			if (key === "ArrowUp") this.y -= 1 * 2;
 			if (key === "ArrowDown") this.y += 1 * 2;

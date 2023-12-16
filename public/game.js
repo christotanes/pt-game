@@ -5,25 +5,19 @@ window.addEventListener('load', () => {
 	const ctx = canvas.getContext("2d");
 	canvas.width = 768;
 	canvas.height = 640;
-	let keys = [];
-	let walls = [];
 	let overworld;
 	let otherPlayers = {};
 
-	const inputHandler = new InputHandler({
-		keys: keys
-	});
+	const inputHandler = new InputHandler({});
 
 	socket.on("mapData", (mapData) => {
 		overworld = new Overworld({
 			map: mapData,
-			// room: mapData.tsjRoomBuilder,
-			// interior: mapData.tsjInterior,
 			canvas: ctx
 		})
-		// console.log('mapdata data on client: ', mapData)
+
 		overworld.init();
-		animate(16);
+		animate(1000);
 	})
 
 	socket.on("otherPlayers", (data) => {
@@ -49,7 +43,8 @@ window.addEventListener('load', () => {
 	
 	const player = new Player({
 		canvas: ctx,
-		keys: keys
+		keys: inputHandler.keys,
+		direction: inputHandler.direction
 	})
 
 	socket.on("connect", () => {
@@ -69,19 +64,20 @@ window.addEventListener('load', () => {
 
 		for (let playerId in otherPlayers) {
 			const otherPlayer = otherPlayers[playerId];
-			otherPlayer.renderPlayer(walls); // Pass walls or the relevant objects for collision
+			otherPlayer.renderPlayer(overworld.walls); // Pass walls or the relevant objects for collision
 		}
 
 		if (player.isLoaded) {
-			player.renderPlayer(overworld.walls);
+			player.update(overworld.walls);
 			socket.emit('playerPos', {
 				playerId: socket.id,
 				playerPosX: player.x,
 				playerPosY: player.y
 			})
 		}
-
-		requestAnimationFrame(animate);
+		// console.log(deltaTime)
+		requestAnimationFrame(() => {
+			animate()});
 		
 	}
 })

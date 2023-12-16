@@ -7,18 +7,19 @@ class Player{
 		this.height = 64;
 		this.x = 96;
 		this.y = 576;
+		this.imgSrcX = 0;
+		this.imgSrcY = 0;
 		this.speed = 0;
-		this.playerImageTileSource = './assets/person/idle_32x32_2.png';
+		this.playerImageTileSource = './assets/person/male_player_1.png';
 		this.isLoaded = false;
 		this.playerImage = new Image();
-		this.keys = config.keys
+		this.keys = config.keys;
+		this.direction = config.direction;
+		this.animation = []
 	}
 
 	// Add randomizer here
-
-	renderPlayer(objects) {
-		if (!this.isLoaded) return;
-
+	update(objects){
 		// console.log('keys from Player.js: ', this.keys)
 		this.keys.forEach(key => {
 			let newX = this.x;
@@ -45,10 +46,16 @@ class Player{
 			}
 		});
 
+		this.renderPlayer();
+	}
+
+	renderPlayer() {
+		if (!this.isLoaded) return;
+
 		this.ctx.save();
 		this.ctx.drawImage(
 			this.playerImage,
-			96, 0, this.width, this.height,
+			this.imgSrcX, this.imgSrcY, this.width, this.height,
 			this.x, this.y, this.width, this.height
 		)
 

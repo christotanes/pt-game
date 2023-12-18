@@ -33,6 +33,10 @@ window.addEventListener('load', () => {
 			}
 			otherPlayers[data.playerId].x = data.playerPosX;
 			otherPlayers[data.playerId].y = data.playerPosY;
+			otherPlayers[data.playerId].direction = data.playerState;
+			otherPlayers[data.playerId].imgSrcX = data.playerImgSrcX;
+			otherPlayers[data.playerId].imgSrcY = data.playerImgSrcY;
+			otherPlayers[data.playerId].speed = data.playerSpeed;
 		}
 	});
 
@@ -65,7 +69,7 @@ window.addEventListener('load', () => {
 
 		for (let playerId in otherPlayers) {
 			const otherPlayer = otherPlayers[playerId];
-			otherPlayer.renderPlayer(overworld.walls); // Pass walls or the relevant objects for collision
+			otherPlayer.update(overworld.walls); // Pass walls or the relevant objects for collision
 		}
 
 		if (player.isLoaded) {
@@ -73,7 +77,11 @@ window.addEventListener('load', () => {
 			socket.emit('playerPos', {
 				playerId: socket.id,
 				playerPosX: player.x,
-				playerPosY: player.y
+				playerPosY: player.y,
+				playerState: player.direction,
+				playerImgSrcX: player.imgSrcX,
+				playerImgSrcY: player.imgSrcY,
+				playerSpeed: player.speed
 			})
 		}
 		// console.log(deltaTime)

@@ -33,6 +33,10 @@ io.on("connection", (socket) => {
     playerId: socket.id,
     playerPosX: 0,
     playerPosY: 0,
+    playerState: "Down",
+    playerImgSrcX: 0,
+    playerImgSrcY: 0,
+    playerSpeed: 2
   }
 
   playerSockets[currentGroup].push(player);
@@ -52,7 +56,11 @@ io.on("connection", (socket) => {
     playerSockets[currentGroup].map(player => {
       if (player.playerId === data.playerId) {
         player.playerPosX = data.playerPosX;
-        player.playerPosY = data.playerPosY
+        player.playerPosY = data.playerPosY;
+        player.playerState = data.playerState;
+        player.playerImgSrcX = data.playerImgSrcX;
+        player.playerImgSrcY = data.playerImgSrcY;
+        player.playerSpeed = data.playerSpeed;
       }
     })
     

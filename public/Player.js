@@ -29,7 +29,7 @@ class Player{
 	}
 	
 	// Add randomizer here
-	update(objects){
+	update(objects) {
 		if (this.direction[0] === "Up") this.imgSrcY = 3 * this.height;
 		if (this.direction[0] === "Down" || this.direction[0] === "") this.imgSrcY = 0 * this.height;
 		if (this.direction[0] === "Left") this.imgSrcY = 1 * this.height;

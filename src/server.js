@@ -73,6 +73,7 @@ io.on("connection", (socket) => {
     console.log('Updated playerSockets after disconnect: ',playerSockets)
   })
 });
+
 // io.on("connection", async (socket) => {
 //   console.log(socket.id, 'socket id');
 //   try {

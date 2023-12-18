@@ -9,6 +9,7 @@ window.addEventListener('load', () => {
 	let otherPlayers = {};
 
 	const inputHandler = new InputHandler({});
+	inputHandler.init();
 
 	socket.on("mapData", (mapData) => {
 		overworld = new Overworld({
@@ -17,7 +18,7 @@ window.addEventListener('load', () => {
 		})
 
 		overworld.init();
-		animate(1000);
+		animate(16);
 	})
 
 	socket.on("otherPlayers", (data) => {
@@ -76,8 +77,7 @@ window.addEventListener('load', () => {
 			})
 		}
 		// console.log(deltaTime)
-		requestAnimationFrame(() => {
-			animate()});
+		requestAnimationFrame(animate);
 		
 	}
 })
